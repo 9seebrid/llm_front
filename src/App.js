@@ -15,7 +15,7 @@ function App() {
     setIsLoading(true); // 로딩 상태로 변경
 
     try {
-      const response = await fetch('http://pythonback.9seebird.site/chat', {
+      const response = await fetch('https://pythonback.9seebird.site/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
