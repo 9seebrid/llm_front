@@ -1,0 +1,35 @@
+# Referrence: https://synuns.tistory.com/75
+name: CICD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Sign in to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build Docker Image
+        run: docker build -t koobonse/llm-front .
+      - name: Push Docker Image
+        run: docker push koobonse/llm-front:latest
+
+  deploy:
+    needs: build
+    runs-on: linode
+
+    steps:
+      - name: Delete Docker Image Cache
+        run: docker system prune -a -f
+      - name: Pull image from docker hub
+        run: docker pull koobonse/llm-front:latest
+      - name: Delete existing container
+        run: docker rm -f reactContainer
+      - name: Run container
+        run: docker run -d -p 3001:80 --name reactContainer koobonse/llm-front
